@@ -12,10 +12,10 @@ use crate::{save_weighted_midi_tracks_from_file, save_separated_midi_tracks_from
 
 #[test]
 fn test_weighted() {
-    save_weighted_midi_tracks_from_file("./tous.mid", "./output", 1.0, 0.5);
+    save_weighted_midi_tracks_from_file("./tous.mid", "./output", None, Some(0.5));
 }
 
 #[test]
 fn test_separated() {
-    save_separated_midi_tracks_from_file("./tous.mid", "./output");
+    save_separated_midi_tracks_from_file("./hyvan.mid", "./output");
 }

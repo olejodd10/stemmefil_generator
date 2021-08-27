@@ -64,3 +64,19 @@ pub fn relative_track_velocity_change(track: &mut midly::Track, change: f64) {
         }
     }
 }
+
+pub fn dampen_track(track: &mut midly::Track) {
+    for track_event in track.iter_mut() {
+        match track_event.kind {
+            midly::TrackEventKind::Midi{channel: _, ref mut message} => {
+                match message {
+                    midly::MidiMessage::NoteOn{key:_, vel} => { // Vel defaults to ref mut?
+                        *vel = midly::num::u7::new(0); // "Note that by convention a NoteOn message with a velocity of 0 is equivalent to a NoteOff."
+                    },
+                    _ => {}
+                }
+            },
+            _ => {}
+        }
+    }
+}
