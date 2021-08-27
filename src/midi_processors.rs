@@ -15,7 +15,7 @@ pub fn save_separated_midi_tracks_from_file<P: AsRef<Path>>(midi_path: P, out_di
 
 //Saves the tracks of an smf as separated midi files
 fn save_separated_midi_tracks<P: AsRef<Path>>(smf: midly::Smf, out_dir: P) {
-    
+
     // for (i, track) in smf.tracks.into_iter().enumerate() {
     //     let mut separated_track_smf = midly::Smf::new(smf.header); // midly::Header implements Clone
     //     let track_name = extract_track_name(&track).unwrap_or(format!("track_{}", i));
@@ -29,6 +29,7 @@ fn save_separated_midi_tracks<P: AsRef<Path>>(smf: midly::Smf, out_dir: P) {
         let mut separated_smf = smf.clone();
         let track_name = extract_track_name(&separated_smf.tracks[i]).unwrap_or(format!("track_{}", i));
         let track_midi_filename = format!("{}.mid", track_name);
+        let out_file_path = out_dir.as_ref().join(&track_midi_filename); 
 
         for (j, track) in separated_smf.tracks.iter_mut().enumerate() {
             if j != i {
@@ -36,7 +37,11 @@ fn save_separated_midi_tracks<P: AsRef<Path>>(smf: midly::Smf, out_dir: P) {
             }
         }
         
-        separated_smf.save(out_dir.as_ref().join(&track_midi_filename)).expect(&format!("Error saving {}", track_midi_filename));
+        if out_file_path.exists() {
+            println!("Overwriting existing file {}", track_midi_filename);
+        } else {
+            separated_smf.save(&out_file_path).expect(&format!("Error saving {}", track_midi_filename));
+        }
     }
 }
 
@@ -53,6 +58,7 @@ fn save_weighted_midi_tracks<P: AsRef<Path>>(smf: midly::Smf, out_dir: P, focuse
         let mut weighted_smf = smf.clone();
         let track_name = extract_track_name(&weighted_smf.tracks[i]).unwrap_or(format!("track_{}", i));
         let track_midi_filename = format!("{}.mid", track_name);
+        let out_file_path = out_dir.as_ref().join(&track_midi_filename); 
 
         if let Some(focused_change) = focused_change {
             relative_track_velocity_change(&mut weighted_smf.tracks[i], focused_change);
@@ -66,6 +72,10 @@ fn save_weighted_midi_tracks<P: AsRef<Path>>(smf: midly::Smf, out_dir: P, focuse
             }
         }
         
-        weighted_smf.save(out_dir.as_ref().join(&track_midi_filename)).expect(&format!("Error saving {}", track_midi_filename));
+        if out_file_path.exists() {
+            println!("Overwriting existing file {}", track_midi_filename);
+        } else {
+            weighted_smf.save(&out_file_path).expect(&format!("Error saving {}", track_midi_filename));
+        }
     }
 }
