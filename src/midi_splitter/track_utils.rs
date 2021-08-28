@@ -48,6 +48,7 @@ pub fn extract_instrument_name(track: &midly::Track) -> Option<String> {
 
 
 //Changes all NoteOn event velocities to initial_value*change
+#[allow(dead_code)]
 pub fn relative_track_velocity_change(track: &mut midly::Track, change: f64) {
     for track_event in track.iter_mut() {
         match track_event.kind {

@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod tests;
 
-mod midi_processors;
-pub use midi_processors::{save_separated_midi_tracks_from_file, save_weighted_midi_tracks_from_file};
+mod midi_splitter;
+pub use midi_splitter::save_isolated_midi_tracks_from_file;
+
+mod mp3_overlayer;
+pub use mp3_overlayer::overlay_mp3s;

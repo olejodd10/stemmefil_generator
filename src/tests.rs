@@ -8,14 +8,15 @@
 
 
 
-use crate::{save_weighted_midi_tracks_from_file, save_separated_midi_tracks_from_file};
+use crate::{save_isolated_midi_tracks_from_file, overlay_mp3s};
 
 #[test]
-fn test_weighted() {
-    save_weighted_midi_tracks_from_file("./tous.mid", "./output", None, Some(0.5));
+fn test_isolated() {
+    save_isolated_midi_tracks_from_file("./hyvan.mid", "./output");
 }
 
 #[test]
-fn test_separated() {
-    save_separated_midi_tracks_from_file("./hyvan.mid", "./output");
+fn test_overlay() {
+    println!("{:?}", std::env::current_dir().unwrap());
+    overlay_mp3s(&["1.mp3", "2.mp3"], "out.mp3");
 }
