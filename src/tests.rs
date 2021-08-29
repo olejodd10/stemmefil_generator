@@ -1,4 +1,4 @@
-use crate::{save_isolated_midi_tracks_from_file, mix_mp3s, mix_mp3s_panned};
+use crate::*;
 
 #[test]
 fn test_isolated() {
@@ -7,10 +7,15 @@ fn test_isolated() {
 
 #[test]
 fn test_mix_simple() {
-    mix_mp3s(&["1.mp3", "2.mp3"], "mix.mp3");
+    mix_audio(&["1.mp3", "2.mp3"], "mix.mp3");
 }
 
 #[test]
 fn test_mix_panned() {
-    mix_mp3s_panned("1.mp3", "2.mp3", "panned.mp3");
+    mix_audio_panned("1.mp3", "2.mp3", "panned.mp3");
+}
+
+#[test]
+fn test_generate() {
+    generate_stemmefiler("FluidR3_GM.sf2", "sit.mid", "output", 5.0)
 }
