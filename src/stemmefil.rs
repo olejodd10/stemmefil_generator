@@ -23,17 +23,17 @@ pub fn generate_stemmefiler<P: AsRef<Path>>(sound_font_path: P, midi_path: P, ou
 
     let isolated_midi_paths = save_isolated_midi_tracks_from_file(midi_path.as_ref(), &temp_dir);
     
-    let pcm_paths: Vec<PathBuf> = isolated_midi_paths.into_iter().map(|isolated_midi_path| {
-        let pcm_path = isolated_midi_path.with_extension("pcm");
-        play_to_raw(sound_font_path.as_ref(), isolated_midi_path.as_path(), &pcm_path, gain);
-        pcm_path
+    let source_paths: Vec<PathBuf> = isolated_midi_paths.into_iter().map(|isolated_midi_path| {
+        let source_path = isolated_midi_path.with_extension("pcm");
+        play_to_raw(sound_font_path.as_ref(), isolated_midi_path.as_path(), &source_path, gain);
+        source_path
     }).collect();
 
-    for (i, left_pcm) in pcm_paths.iter().enumerate() {
-        let stemmefil_name = left_pcm.file_stem().unwrap().to_str().unwrap();
+    for (i, left_source) in source_paths.iter().enumerate() {
+        let stemmefil_name = left_source.file_stem().unwrap().to_str().unwrap();
         eprintln!("Creating stemmefil {}", stemmefil_name);
 
-        let right_pcms: Vec<&Path> = pcm_paths.iter().enumerate().filter_map(|(j,p)| {
+        let right_sources: Vec<&Path> = source_paths.iter().enumerate().filter_map(|(j,p)| {
             if j != i {
                 Some(p.as_path())
             } else {
@@ -41,7 +41,7 @@ pub fn generate_stemmefiler<P: AsRef<Path>>(sound_font_path: P, midi_path: P, ou
             }
         }).collect();
 
-        mix_stemmefil(stemmefil_name, &[left_pcm.as_path()], &right_pcms, out_dir.as_ref(), temp_dir.as_path())
+        mix_stemmefil(stemmefil_name, &[left_source.as_path()], &right_sources, out_dir.as_ref(), temp_dir.as_path())
     }
 
     std::fs::remove_dir_all(temp_dir).unwrap();
