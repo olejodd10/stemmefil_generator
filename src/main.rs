@@ -47,7 +47,6 @@ fn main() {
             .arg(Arg::with_name("left")
                 .short("l")
                 .long("left")
-                // .takes_value(false) //nødvendig??
                 .help("Whether to place focused track in left channel instead of right channel. Default: false")))
         .subcommand(App::new("bulk")
             .about("Create stemmefil for all MIDI files in directory")
@@ -57,7 +56,6 @@ fn main() {
             .arg(Arg::with_name("left")
                 .short("l")
                 .long("left")
-                // .takes_value(false) //nødvendig??
                 .help("Whether to place focused track in left channel instead of right channel. Default: false")))
         .subcommand(App::new("custom")
             .about("Create custom stemmefil for single MIDI file")
@@ -69,18 +67,18 @@ fn main() {
     // Global option handling
     let gain = matches.value_of("gain").map(|v| v.parse().unwrap()).unwrap_or(DEFAULT_GAIN);
     let soundfont_path = matches.value_of("soundfont")
-        .map(|s| PathBuf::from(s))
+        .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(
             std::env::var("STEMMEFIL_SOUNDFONT_PATH").expect("Error: STEMMEFIL_SOUNDFONT_PATH environment variable is not set.")
         ));
 
     // Subcommand handling
-    if let Some(ref matches) = matches.subcommand_matches("single") {
+    if let Some(matches) = matches.subcommand_matches("single") {
         let left = matches.is_present("left");
         let midi_path = PathBuf::from(matches.value_of("midi").unwrap());
         let out_dir = PathBuf::from(matches.value_of("out-dir").unwrap_or_else(|| midi_path.parent().unwrap().to_str().unwrap()));
         generate_stemmefiler_from_midi(soundfont_path.as_path(), midi_path.as_path(), out_dir.as_path(), temp_dir.as_path(), gain, left)
-    } else if let Some(ref matches) = matches.subcommand_matches("bulk") {
+    } else if let Some(matches) = matches.subcommand_matches("bulk") {
         let left = matches.is_present("left");
         let midi_dir = PathBuf::from(matches.value_of("midi-dir").unwrap());
         let out_dir = PathBuf::from(matches.value_of("out-dir").unwrap_or_else(|| midi_dir.to_str().unwrap()));
@@ -90,7 +88,7 @@ fn main() {
                 generate_stemmefiler_from_midi(soundfont_path.as_path(), entry_path.as_path(), out_dir.as_path(), temp_dir.as_path(), gain, left)
             }
         }
-    } else if let Some(ref matches) = matches.subcommand_matches("custom") {
+    } else if let Some(matches) = matches.subcommand_matches("custom") {
         let midi_path = PathBuf::from(matches.value_of("midi").unwrap());
         let out_dir = PathBuf::from(matches.value_of("out-dir").unwrap_or_else(|| midi_path.parent().unwrap().to_str().unwrap()));
         custom_stemmefil_from_midi(soundfont_path.as_path(), midi_path.as_path(), out_dir.as_path(), temp_dir.as_path(), gain)

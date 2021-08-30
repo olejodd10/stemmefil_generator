@@ -11,20 +11,19 @@ use audio_mixer::{mix_audio, mix_audio_panned};
 fn mix_stemmefil<P: AsRef<Path>, S: AsRef<str>>(name: S, left_sources: &[P], right_sources: &[P], out_dir: P, temp_dir: P) {
     let out_path = out_dir.as_ref().join(format!("{}.mp3", name.as_ref()));
     let left_mix_path = temp_dir.as_ref().join(format!("{}_left.mp3", name.as_ref()));
-    mix_audio(&left_sources.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), left_mix_path.as_ref()); //Ugly workaround here
+    mix_audio(&left_sources.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), left_mix_path.as_ref()); // Ugly AsRef<P> workaround 
     let right_mix_path = temp_dir.as_ref().join(format!("{}_right.mp3", name.as_ref()));
-    mix_audio(&right_sources.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), right_mix_path.as_ref()); //Ugly workaround here
+    mix_audio(&right_sources.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), right_mix_path.as_ref()); // Ugly AsRef<P> workaround 
     mix_audio_panned(left_mix_path, right_mix_path, out_path);
 }
 
 pub fn generate_stemmefiler_from_midi<P: AsRef<Path>>(soundfont_path: P, midi_path: P, out_dir: P, temp_dir: P, gain: f64, left: bool) {
     let isolated_midi_paths = save_isolated_midi_tracks_from_file(midi_path.as_ref(), temp_dir.as_ref());
-    // Ugly workaround again:
-    generate_stemmefiler_from_isolated_midis(soundfont_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain, left)
+    generate_stemmefiler_from_isolated_midis(soundfont_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain, left) // Ugly AsRef<P> workaround 
 }
 
 pub fn generate_stemmefiler_from_isolated_midis<P: AsRef<Path>>(soundfont_path: P, isolated_midi_paths: &[P], out_dir: P, temp_dir: P, gain: f64, left: bool) {
-    let source_paths: Vec<PathBuf> = isolated_midi_paths.into_iter().map(|isolated_midi_path| {
+    let source_paths: Vec<PathBuf> = isolated_midi_paths.iter().map(|isolated_midi_path| {
         let source_path = isolated_midi_path.as_ref().with_extension("pcm");
         play_to_raw(soundfont_path.as_ref(), isolated_midi_path.as_ref(), &source_path, gain);
         source_path
@@ -55,12 +54,11 @@ pub fn generate_stemmefiler_from_sources<P: AsRef<Path>>(source_paths: &[P], out
 
 pub fn custom_stemmefil_from_midi<P: AsRef<Path>>(soundfont_path: P, midi_path: P, out_dir: P, temp_dir: P, gain: f64) {
     let isolated_midi_paths = save_isolated_midi_tracks_from_file(midi_path.as_ref(), temp_dir.as_ref());
-    // Ugly workaround again:
-    custom_stemmefil_from_isolated_midis(soundfont_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain)
+    custom_stemmefil_from_isolated_midis(soundfont_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain) // Ugly AsRef<P> workaround 
 }
 
 pub fn custom_stemmefil_from_isolated_midis<P: AsRef<Path>>(soundfont_path: P, isolated_midi_paths: &[P], out_dir: P, temp_dir: P, gain: f64) {
-    let source_paths: Vec<PathBuf> = isolated_midi_paths.into_iter().map(|isolated_midi_path| {
+    let source_paths: Vec<PathBuf> = isolated_midi_paths.iter().map(|isolated_midi_path| {
         let source_path = isolated_midi_path.as_ref().with_extension("pcm");
         play_to_raw(soundfont_path.as_ref(), isolated_midi_path.as_ref(), &source_path, gain);
         source_path

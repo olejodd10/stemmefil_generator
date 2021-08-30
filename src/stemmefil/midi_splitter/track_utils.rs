@@ -20,7 +20,7 @@ pub fn print_track_meta(track: &midly::Track) {
 pub fn extract_track_name(track: &midly::Track) -> Option<String> {
     for track_event in track.iter() {
         if let midly::TrackEventKind::Meta(midly::MetaMessage::TrackName(data)) = track_event.kind {
-            return String::from_utf8(data.to_vec()).ok().map(|name| trim_null(name));
+            return String::from_utf8(data.to_vec()).ok().map(trim_null);
         }
     }
     None

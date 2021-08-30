@@ -14,7 +14,7 @@ pub fn save_isolated_midi_tracks_from_file<P: AsRef<Path>>(midi_path: P, out_dir
     save_isolated_midi_tracks(song_name, smf, out_dir)
 }
 
-//Saves the tracks of an smf as isolated midi files
+// Saves the tracks of an smf as isolated midi files
 // Some tracks may contain meta information that is important to other tracks - that's why tracks are dampened and not removed
 fn save_isolated_midi_tracks<P: AsRef<Path>, S: AsRef<str>>(song_name: S, smf: midly::Smf, out_dir: P) -> Vec<PathBuf> {
     let mut isolated_midi_paths = Vec::new();
