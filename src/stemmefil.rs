@@ -4,9 +4,9 @@ mod midi_splitter;
 mod midi_player;
 mod audio_mixer;
 
-pub use midi_splitter::save_isolated_midi_tracks_from_file;
-pub use midi_player::play_to_raw;
-pub use audio_mixer::{mix_audio, mix_audio_panned};
+use midi_splitter::save_isolated_midi_tracks_from_file;
+use midi_player::play_to_raw;
+use audio_mixer::{mix_audio, mix_audio_panned};
 
 fn mix_stemmefil<P: AsRef<Path>, S: AsRef<str>>(name: S, left_sources: &[P], right_sources: &[P], out_dir: P, temp_dir: P) {
     let out_path = out_dir.as_ref().join(format!("{}.mp3", name.as_ref()));
