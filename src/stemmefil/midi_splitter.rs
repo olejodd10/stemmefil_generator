@@ -7,7 +7,6 @@ mod filename_utils;
 use filename_utils::find_vacant_filename;
 
 // Splits midi_path into its tracks and saves them separately
-#[allow(dead_code)]
 pub fn save_isolated_midi_tracks_from_file<P: AsRef<Path>>(midi_path: P, out_dir: P) -> Vec<PathBuf> {
     let data = std::fs::read(midi_path.as_ref()).unwrap();
     let smf = midly::Smf::parse(&data).unwrap();
