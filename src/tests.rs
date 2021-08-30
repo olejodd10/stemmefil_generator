@@ -19,7 +19,7 @@ fn test_mix_panned() {
 fn test_generate() {
     let temp_dir = format!("{}/stemmefil/sit", std::env::temp_dir().to_str().unwrap());
     std::fs::create_dir_all(&temp_dir).unwrap();
-    generate_stemmefiler_from_midi("FluidR3_GM.sf2", "sit.mid", "output", &temp_dir, 5.0, true);
+    generate_stemmefiler_from_midi("OJs stemme.sf2", "sit.mid", "output", &temp_dir, 5.0, true);
     std::fs::remove_dir_all(temp_dir).unwrap();
 }
 
@@ -27,6 +27,6 @@ fn test_generate() {
 fn test_custom() {
     let temp_dir = format!("{}/stemmefil/sit", std::env::temp_dir().to_str().unwrap());
     std::fs::create_dir_all(&temp_dir).unwrap();
-    custom_stemmefil_from_midi("FluidR3_GM.sf2", "sit.mid", "output", &temp_dir);
+    custom_stemmefil_from_midi("OJs stemme.sf2", "sit.mid", "output", &temp_dir);
     std::fs::remove_dir_all(temp_dir).unwrap();
 }

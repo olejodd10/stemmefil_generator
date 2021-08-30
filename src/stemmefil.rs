@@ -18,24 +18,25 @@ fn mix_stemmefil<P: AsRef<Path>, S: AsRef<str>>(name: S, left_sources: &[P], rig
 }
 
 pub fn generate_stemmefiler_from_midi<P: AsRef<Path>>(sound_font_path: P, midi_path: P, out_dir: P, temp_dir: P, gain: f64, left: bool) {
+    let song_name = midi_path.as_ref().file_stem().unwrap().to_str().unwrap();
     let isolated_midi_paths = save_isolated_midi_tracks_from_file(midi_path.as_ref(), temp_dir.as_ref());
     // Ugly workaround again:
-    generate_stemmefiler_from_isolated_midis(sound_font_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain, left)
+    generate_stemmefiler_from_isolated_midis(song_name, sound_font_path.as_ref(), &isolated_midi_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), gain, left)
 }
 
-pub fn generate_stemmefiler_from_isolated_midis<P: AsRef<Path>>(sound_font_path: P, isolated_midi_paths: &[P], out_dir: P, temp_dir: P, gain: f64, left: bool) {
+pub fn generate_stemmefiler_from_isolated_midis<P: AsRef<Path>, S: AsRef<str>>(song_name: S, sound_font_path: P, isolated_midi_paths: &[P], out_dir: P, temp_dir: P, gain: f64, left: bool) {
     let source_paths: Vec<PathBuf> = isolated_midi_paths.into_iter().map(|isolated_midi_path| {
         let source_path = isolated_midi_path.as_ref().with_extension("pcm");
         play_to_raw(sound_font_path.as_ref(), isolated_midi_path.as_ref(), &source_path, gain);
         source_path
     }).collect();
-    generate_stemmefiler_from_sources(&source_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), left)
+    generate_stemmefiler_from_sources(song_name, &source_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), left)
 }
 
-pub fn generate_stemmefiler_from_sources<P: AsRef<Path>>(source_paths: &[P], out_dir: P, temp_dir: P, left: bool) {
-
+pub fn generate_stemmefiler_from_sources<P: AsRef<Path>, S: AsRef<str>>(song_name: S, source_paths: &[P], out_dir: P, temp_dir: P, left: bool) {
     for (i, main_source) in source_paths.iter().enumerate() {
-        let stemmefil_name = main_source.as_ref().file_stem().unwrap().to_str().unwrap();
+        let track_name = main_source.as_ref().file_stem().unwrap().to_str().unwrap();
+        let stemmefil_name = format!("{} {}", song_name.as_ref(), track_name);
         eprintln!("Creating stemmefil {}", stemmefil_name);
 
         let accompanying_sources: Vec<&Path> = source_paths.iter().enumerate().filter_map(|(j,p)| {
