@@ -27,6 +27,6 @@ fn test_generate() {
 fn test_custom() {
     let temp_dir = format!("{}/stemmefil/sit", std::env::temp_dir().to_str().unwrap());
     std::fs::create_dir_all(&temp_dir).unwrap();
-    custom_stemmefil_from_midi("OJs stemme.sf2", "sit.mid", "output", &temp_dir);
+    custom_stemmefil_from_midi("OJs stemme.sf2", "sit.mid", "output", &temp_dir, 4.0);
     std::fs::remove_dir_all(temp_dir).unwrap();
 }
