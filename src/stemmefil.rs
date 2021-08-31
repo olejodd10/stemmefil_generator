@@ -31,24 +31,40 @@ pub fn generate_stemmefiler_from_isolated_midis<P: AsRef<Path>>(soundfont_path: 
     generate_stemmefiler_from_sources(&source_paths.iter().map(|p| p.as_ref()).collect::<Vec<&Path>>(), out_dir.as_ref(), temp_dir.as_ref(), left)
 }
 
-pub fn generate_stemmefiler_from_sources<P: AsRef<Path>>(source_paths: &[P], out_dir: P, temp_dir: P, left: bool) {
+pub fn generate_stemmefiler_from_sources<P: AsRef<Path> + Send>(source_paths: &[P], out_dir: P, temp_dir: P, left: bool) {
+    let mut thread_handles = Vec::new();
+
     for (i, main_source) in source_paths.iter().enumerate() {
-        let stemmefil_name = main_source.as_ref().file_stem().unwrap().to_str().unwrap();
-        eprintln!("Creating stemmefil {}", stemmefil_name);
+        // Create owned copies to pass to new thread
+        let main_source = main_source.as_ref().to_path_buf();
+        let source_paths: Vec<PathBuf> = source_paths.iter().map(|p| p.as_ref().to_path_buf()).collect();
+        let out_dir = out_dir.as_ref().to_path_buf();
+        let temp_dir = temp_dir.as_ref().to_path_buf();
 
-        let accompanying_sources: Vec<&Path> = source_paths.iter().enumerate().filter_map(|(j,p)| {
-            if j != i {
-                Some(p.as_ref())
+        thread_handles.push(std::thread::spawn(move || {
+            let stemmefil_name = main_source.file_stem().unwrap().to_str().unwrap();
+            println!("Creating stemmefil {}", stemmefil_name);
+    
+            let accompanying_sources: Vec<&Path> = source_paths.iter().enumerate().filter_map(|(j,p)| {
+                if j != i {
+                    Some(p.as_ref())
+                } else {
+                    None
+                }
+            }).collect();
+    
+            if left {
+                mix_stemmefil(stemmefil_name, &[main_source.as_path()], &accompanying_sources, out_dir.as_path(), temp_dir.as_path())
             } else {
-                None
+                mix_stemmefil(stemmefil_name, &accompanying_sources, &[main_source.as_path()], out_dir.as_path(), temp_dir.as_path())
             }
-        }).collect();
 
-        if left {
-            mix_stemmefil(stemmefil_name, &[main_source.as_ref()], &accompanying_sources, out_dir.as_ref(), temp_dir.as_ref())
-        } else {
-            mix_stemmefil(stemmefil_name, &accompanying_sources, &[main_source.as_ref()], out_dir.as_ref(), temp_dir.as_ref())
-        }
+            println!("Finished creating {}", stemmefil_name);
+        }))
+    }
+
+    for handle in thread_handles {
+        handle.join().unwrap();
     }
 }
 
